@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Pruebas de formularios</title>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <div>
+            <form>
+                <input type="text" minlength="3" maxlength="15" required />
+                <br />
+                <input type="password" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$" minlength="6"
+                       title="Debe incluir una letra mayúscula, una letra minúscula y un número" required/>
+                <input type="number" pattern="[-+]?[0-9]*[,]?[0-9]+" step="0.1" required />
+                <input type="submit" />
+            </form>
+        </div>
+<!--         <script>
+            document.querySelector("input[type='password']").setCustomValidity('Debe contener...');
+        </script> -->
+    </body>
+</html>
+
+<!-- pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$" -->

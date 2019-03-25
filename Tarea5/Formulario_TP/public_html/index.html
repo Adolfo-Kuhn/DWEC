@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>User Logging</title>
+        <meta charset="UTF-8">
+        <link href="estilo.css" rel="stylesheet" />
+        <script src="codigo.js"></script>
+    </head>
+    <body>
+        <div class="wrapper">
+            <header>
+                <h1>Register</h1>
+                <ul>
+                    <li>Already got an account? <a href="#">Log in</a></li>
+                </ul>
+            </header>
+            <div id="msgArea"></div>
+            <main>
+                <form name="login" id="login">
+                    <div class="campo">
+                        <label for="mail" class="logLabel margLab">Email address</label>
+                        <input form="login" name="mail" id="mail" type="email" required 
+                        pattern="^[a-zA-Z0-9.!#$%*+/=?_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+$"
+                        title="A valid email address is required." />
+                    </div>
+                    <div class="campo">
+                        <label for="pass" class="logLabel">Password</label>
+                        <label for="pass" class=" margLab">Must contain 8+ characters with at least 1 number.</label>
+                        <input form="login" name="pass" id="pass" type="password" required 
+                        pattern="^(?!^[0-9]*$)(?!^[a-zA-Z]*$)^([a-zA-Z0-9]{8,})$" 
+                        title="Please introduce a valid password."/>
+                        <img class="passControl" src="img/Visible_32.png" alt="Visibility" />
+                    </div>
+                    <input form="login" name="enviar" id="enviar" type="submit" value="Register" />
+                </form>
+            </main>
+        </div>
+    </body>
+</html>

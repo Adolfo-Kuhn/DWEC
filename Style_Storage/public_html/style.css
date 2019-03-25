@@ -1,0 +1,65 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+#wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    padding-top: 50px;
+    text-align: justify;
+}
+
+#txt {
+    border: 2px solid black;
+    padding: 20px;
+}
+
+header > h1 {
+    margin-bottom: 20px;
+}
+
+fieldset {
+    margin-top: 20px;
+    padding: 10px 20px 20px;
+    background-color: white;
+}
+
+select {
+    background-color: white;
+}
+
+select#predef {
+    background-color: white;
+    width: 110px;
+}
+
+select#font, input#theme {
+    background-color: white;
+    height: 30px;
+}
+
+div.inputElm {
+    float: left;
+    padding: 0 20px;
+}
+
+label[for='predef'] {
+    display: block;
+}
+
+input[type='button'] {
+    color: black;
+    background-color: silver;
+    width: 150px;
+    height: 30px;
+}
+
+input[type='text'] {
+    padding-left: 10px;
+}
+
+.inputElm {
+    margin: 10px 0;
+}
+

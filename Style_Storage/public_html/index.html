@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>STYLE - STORAGE</title>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="style.css" />
+        <script src="defaults.js"></script>
+        <script src="code.js"></script>
+    </head>
+    <body>
+        <div id="wrapper">
+            <header>
+                <h1>Lorem ipsum dolor</h1>
+            </header>
+            <main>
+                <p id="txt">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam sit amet efficitur arcu. Praesent tempus libero sit amet ultrices fringilla. Quisque quis lobortis diam, id molestie purus. Quisque id pellentesque velit, nec eleifend erat. Integer sed hendrerit ex. Nulla interdum risus eu lorem venenatis congue. Suspendisse turpis ante, dictum non tellus vitae, ultrices vulputate ligula. Duis efficitur, magna a pellentesque venenatis, lacus dolor lacinia quam, non imperdiet ex leo et est. Quisque auctor ornare laoreet. Proin vitae lobortis nisi. Etiam elementum lacus ut maximus condimentum. Vestibulum gravida ex id ligula tempus volutpat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce ornare interdum ex. Nunc bibendum nisi justo, eu fermentum odio hendrerit ut. Ut ante nibh, congue vitae lorem nec, pellentesque egestas diam. Nullam ac interdum lectus, venenatis pretium ante. Aliquam nec enim vulputate, ornare sapien non, consequat tellus.</p>
+            </main>
+            <aside>
+                <form name="styleForm" class="form">
+                    <fieldset>
+                        <div class="inputElm">
+                            <label for="predef">Predefined Styles</label>
+                            <select id="predef" name="predef" size="6">
+                                <option value="seawind" data-type="local">Seawind</option>
+                                <option value="sunrise" data-type="local">Sunrise</option>
+                                <option value="sunset" data-type="local">Sunset</option>
+                            </select>
+                        </div>
+                        <div class="inputElm">
+                            <label for="back">Background color</label>
+                            <input id="back" name="bckcolor" type="color" />                        
+                        </div>
+                        <div class="inputElm">
+                            <label for="front">Title color</label>
+                            <input id="front" name="frntcolor" type="color" />                        
+                        </div>
+                        <div class="inputElm">
+                            <label for="font">Pick a font</label>
+                            <select id="font" name="font">
+                                <option value="Arial">Arial</option>
+                                <option value="Courier New">Courier New</option>
+                                <option value="Times New Roman">Times New Roman</option>
+                                <option value="Verdana" selected>Verdana</option>
+                            </select>
+                        </div>
+                        <div class="inputElm">
+                            <label for="theme">Set a name</label>
+                            <input id="theme" name="theme" type="text" />                        
+                        </div>
+                        <div class="inputElm">
+                            <input id="save" name="save" type="button" value="Save">
+                        </div>
+                    </fieldset>
+                </form>
+            </aside>
+        </div>
+    </body>
+</html>

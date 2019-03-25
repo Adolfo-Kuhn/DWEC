@@ -1,0 +1,106 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: Calibri, Arial;
+}
+
+.wrapper {
+    max-width: 460px;
+    margin: 0 auto;
+    padding-top: 50px;
+}
+
+header{
+    position: static;
+}
+
+h1 {
+    font-size: 3.5em;
+}
+
+h2 {
+    font-size: 1.3em;
+}
+
+li {
+    position: relative;
+    margin: 20px 0;
+    left: 15px;
+    font-size: 1em;
+}
+
+div.campo {
+    margin-bottom: 30px;
+}
+
+div.campo:last-child {
+    position: relative;
+}
+
+div.campo label {
+    display: block;
+}
+
+div.campo label.margLab {
+    margin-bottom: 10px;
+}
+
+div.campo > .passControl {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    left: -60px;
+    bottom: -11px;
+    cursor: pointer;
+    z-index: 1000;
+}
+
+.logLabel, div.inputError {
+    font-size: 1.1em;
+    font-weight: bold;
+    
+}
+
+input[required] {
+    width: 400px;
+    height: 40px;
+    padding-left: 10px;
+    border: 2px solid black;
+    font-family: courier new;
+    font-size: 1.2em;
+}
+
+input[type='submit'] {
+    width: 100px;
+    height: 40px;
+    color: white;
+    background-color: royalblue;
+    font-size: 1.1em;
+}
+
+div.inputError {
+    padding-left: 40px;
+    margin-bottom: 15px;
+    color: red;
+    background: url('img/Error_32.png') left no-repeat;
+}
+
+div#msgArea.validMessage {
+    width: 400px;
+    margin-bottom: 20px;
+    padding: 10px 0 10px 10px;
+    border: 3px black solid;
+}
+
+div#msgArea.errorMessage {
+    width: 400px;
+    margin-bottom: 20px;
+    padding: 10px 0 10px 10px;
+    border: 3px red solid;
+}
+
+div#msgArea > p.errorItem {
+    color: red;
+    text-decoration: underline;
+    font-weight: bold;
+}
