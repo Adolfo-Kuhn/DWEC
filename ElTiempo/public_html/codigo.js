@@ -1,7 +1,15 @@
+/**
+ * 
+ * @returns {void}
+ */
 function iniciar() {
     cargarZonas();
 }
 
+/**
+ * 
+ * @returns {void}
+ */
 function cargarZonas() {
     let xhr = new XMLHttpRequest();
     xhr.open('GET', 'areas.json', true);
@@ -14,6 +22,11 @@ function cargarZonas() {
     };
 }
 
+/**
+ * 
+ * @param {Array} datos
+ * @returns {void}
+ */
 function crearMapa(...datos) {
     datos = datos.flat();
     document.getElementsByTagName('img')[0].setAttribute('usemap', '#sevilla');
@@ -34,11 +47,21 @@ function crearMapa(...datos) {
     document.querySelector('.mapa').appendChild(mapa);
 }
 
+/**
+ * 
+ * @param {Event} e
+ * @returns {void}
+ */
 function restTiempo(e) {
     let idCiudad = e.target.dataset.cityId;
     cargarPrediccion(idCiudad);
 }
 
+/**
+ * 
+ * @param {Number} idCiudad
+ * @returns {void}
+ */
 function cargarPrediccion(idCiudad) {
     let appId = '123bd783ca7ed95d18f949ea84051a1c';
     let url = 'http://api.openweathermap.org/data/2.5/forecast';
@@ -55,12 +78,22 @@ function cargarPrediccion(idCiudad) {
     };
 }
 
+/**
+ * 
+ * @param {Object} datos
+ * @returns {void}
+ */
 function cargarDatos(datos) {
     let {list} = datos;
     let aResultado = list.map(destructurar).filter(enFecha);
     console.log(aResultado);
 }
 
+/**
+ * 
+ * @param {Object} datos
+ * @returns {Object}
+ */
 function destructurar(datos) {
     let {
         clouds: {all: nubes},
@@ -74,7 +107,11 @@ function destructurar(datos) {
         viento: viento, nubes: nubes, presion: presion};
 }
 
-
+/**
+ * 
+ * @param {Object} objeto
+ * @returns {Boolean}
+ */
 function enFecha(objeto) {
     let hoy = new Date().getDate();
     let fechaObjeto = new Date(objeto.fecha).getDate();
