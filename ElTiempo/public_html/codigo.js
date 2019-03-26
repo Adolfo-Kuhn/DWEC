@@ -75,7 +75,8 @@ function restTiempo(e) {
 function cargarDatos(datos) {
     let {list} = datos;
     let aResultado = list.map(destructurar).filter(enFecha);
-    console.log(aResultado);
+    let grupos = agruparDatos(aResultado);
+    console.log(grupos);
 }
 
 /**
@@ -108,6 +109,24 @@ function enFecha(objeto) {
         return true;
     }
     return false;
+}
+
+function agruparDatos(datos) {
+    let fecha = new Date(datos[0].fecha).getDate();
+    let dias = [], grupo = [];
+    for (let i = 0; i < datos.length; i++) {
+        if (new Date(datos[i].fecha).getDate() === fecha) {
+            grupo.push(datos[i]);
+            fecha = new Date(datos[i].fecha).getDate();
+        } else {
+            dias.push(grupo);
+            grupo = [];
+            grupo.push(datos[i]);
+            fecha = new Date(datos[i].fecha).getDate();
+        }
+    }
+    dias.push(grupo);
+    return dias;
 }
 
 window.addEventListener('load', iniciar);
