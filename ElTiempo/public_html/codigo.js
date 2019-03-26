@@ -88,7 +88,7 @@ function destructurar(datos) {
     let {
         clouds: {all: nubes},
         dt_txt: fecha,
-        main: {temp: maxima, temp_min: minima, grnd_level: presion},
+        main: {temp_max: maxima, temp_min: minima, grnd_level: presion},
         weather: [{description: leyenda}],
         wind: {speed: viento}
     } = datos;
@@ -111,18 +111,21 @@ function enFecha(objeto) {
     return false;
 }
 
+const getDia = a => new Date(a).getDate();
+
 function agruparDatos(datos) {
-    let fecha = new Date(datos[0].fecha).getDate();
+    let fecha = getDia(datos[0].fecha);
     let dias = [], grupo = [];
+    
     for (let i = 0; i < datos.length; i++) {
-        if (new Date(datos[i].fecha).getDate() === fecha) {
+        if (getDia(datos[i].fecha) === fecha) {
             grupo.push(datos[i]);
-            fecha = new Date(datos[i].fecha).getDate();
+            fecha = getDia(datos[i].fecha);
         } else {
             dias.push(grupo);
             grupo = [];
             grupo.push(datos[i]);
-            fecha = new Date(datos[i].fecha).getDate();
+            fecha = getDia(datos[i].fecha);
         }
     }
     dias.push(grupo);
