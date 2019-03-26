@@ -1,0 +1,72 @@
+[    
+    {
+        "nombre": "Sevilla",
+        "coord": "218,252,376,281",
+        "id": 2510911
+    },
+    {
+        "nombre": "Lora del Río",
+        "coord": "354,105,473,140",
+        "id": 6361010
+    },
+    {
+        "nombre": "Écija",
+        "coord": "600,183,663,215",
+        "id": 6360994
+    },
+    {
+        "nombre": "La Rinconada",
+        "coord": "212,194,353,240",
+        "id": 2515562
+    },
+    {
+        "nombre": "Carmona",
+        "coord": "368,225,478,249",
+        "id": 2520118
+    },
+    {
+        "nombre": "Alcalá de Guadaíra",
+        "coord": "281,287,487,309",
+        "id": 6360959
+    },
+    {
+        "nombre": "Osuna",
+        "coord": "558,332,625,673",
+        "id": 6361023
+    },
+    {
+        "nombre": "Estepa",
+        "coord": "644,308,715,348",
+        "id": 6360996
+    },
+    {
+        "nombre": "Dos Hermanas",
+        "coord": "242,320,410,343",
+        "id": 2518794
+    },
+    {
+        "nombre": "Coria del Río",
+        "coord": "111,295,200,339",
+        "id": 6360989
+    },
+    {
+        "nombre": "Los Palacios y Villafranca",
+        "coord": "118,381,255,434",
+        "id": 2514553
+    },
+    {
+        "nombre": "Utrera",
+        "coord": "303,376,387,395",
+        "id": 6361050
+    },
+    {
+        "nombre": "Morón de la Frontera",
+        "coord": "432,387,561,439",
+        "id": 6361020
+    },
+    {
+        "nombre": "Lebrija",
+        "coord": "170,505,260,529",
+        "id": 6361008
+    }
+]
