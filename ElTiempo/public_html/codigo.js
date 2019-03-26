@@ -12,13 +12,13 @@ function iniciar() {
  * @returns {void}
  */
 function peticionXHR(recurso = 1, idCiudad) {
-    let eFichero = 'json/areas.json';
+    let sFichero = 'json/areas.json';
     
     let appId = '123bd783ca7ed95d18f949ea84051a1c';
-    let ePrediccion = 'http://api.openweathermap.org/data/2.5/forecast';
-    ePrediccion += `?id=${idCiudad}&appid=${appId}&cnt=24&units=metric&lang=es`;
+    let sPrediccion = 'http://api.openweathermap.org/data/2.5/forecast';
+    sPrediccion += `?id=${idCiudad}&appid=${appId}&cnt=24&units=metric&lang=es`;
     
-    let eRecurso = recurso ? eFichero : ePrediccion;
+    let eRecurso = recurso ? sFichero : sPrediccion;
     
     let xhr = new XMLHttpRequest();
     xhr.open('GET', eRecurso, true);
