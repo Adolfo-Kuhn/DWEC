@@ -3,24 +3,34 @@
  * @returns {void}
  */
 function iniciar() {
-    cargarZonas();
+    peticionXHR();
 }
 
 /**
- * 
+ * @param {Boolean} recurso 
+ * @@param {Number} idCiudad 
  * @returns {void}
  */
-function cargarZonas() {
+function peticionXHR(recurso = 1, idCiudad) {
+    let eFichero = 'json/areas.json';
+    
+    let appId = '123bd783ca7ed95d18f949ea84051a1c';
+    let ePrediccion = 'http://api.openweathermap.org/data/2.5/forecast';
+    ePrediccion += `?id=${idCiudad}&appid=${appId}&cnt=24&units=metric&lang=es`;
+    
+    let eRecurso = recurso ? eFichero : ePrediccion;
+    
     let xhr = new XMLHttpRequest();
-    xhr.open('GET', 'areas.json', true);
+    xhr.open('GET', eRecurso, true);
     xhr.send(null);
     xhr.onreadystatechange = () => {
         if (xhr.readyState === 4 && xhr.status === 200) {
             let aDatos = JSON.parse(xhr.responseText);
-            crearMapa(aDatos);
+            recurso ? crearMapa(aDatos) : cargarDatos(aDatos);
         }
     };
 }
+
 
 /**
  * 
@@ -54,28 +64,7 @@ function crearMapa(...datos) {
  */
 function restTiempo(e) {
     let idCiudad = e.target.dataset.cityId;
-    cargarPrediccion(idCiudad);
-}
-
-/**
- * 
- * @param {Number} idCiudad
- * @returns {void}
- */
-function cargarPrediccion(idCiudad) {
-    let appId = '123bd783ca7ed95d18f949ea84051a1c';
-    let url = 'http://api.openweathermap.org/data/2.5/forecast';
-    url += `?id=${idCiudad}&appid=${appId}&cnt=24&units=metric&lang=es`;
-    
-    let xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
-    xhr.send(null);
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            let aDatos = JSON.parse(xhr.responseText);
-            cargarDatos(aDatos);
-        }
-    };
+    peticionXHR(0, idCiudad);
 }
 
 /**
