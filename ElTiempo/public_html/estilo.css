@@ -1,0 +1,28 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+div#wrapper {
+    max-width: 1240px;
+    margin: 0 auto;
+}
+
+h1 {
+    margin: 30px 0 15px 20px;
+}
+
+main.mapa {
+    display: inline-block;
+}
+
+aside.clima {
+    display: inline-block;
+    width: 400px;
+    height: 567px;
+    margin-left: 40px;
+}
+
+img {
+    border: 4px black ridge;    
+}

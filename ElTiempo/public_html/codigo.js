@@ -1,10 +1,3 @@
-/**
- * 
- * @returns {void}
- */
-function iniciar() {
-    peticionXHR();
-}
 
 /**
  * @param {Boolean} recurso 
@@ -16,7 +9,7 @@ function peticionXHR(recurso = 1, idCiudad) {
     
     let appId = '123bd783ca7ed95d18f949ea84051a1c';
     let sPrediccion = 'http://api.openweathermap.org/data/2.5/forecast';
-    sPrediccion += `?id=${idCiudad}&appid=${appId}&cnt=24&units=metric&lang=es`;
+    sPrediccion += `?id=${idCiudad}&appid=${appId}&units=metric&lang=es`;
     
     let eRecurso = recurso ? sFichero : sPrediccion;
     
@@ -29,6 +22,7 @@ function peticionXHR(recurso = 1, idCiudad) {
             recurso ? crearMapa(aDatos) : cargarDatos(aDatos);
         }
     };
+    xhr.addEventListener('error', gestionarError);
 }
 
 
@@ -76,7 +70,7 @@ function cargarDatos(datos) {
     let {list} = datos;
     let aResultado = list.map(destructurar).filter(enFecha);
     let grupos = agruparDatos(aResultado);
-    console.log(grupos);
+    console.log(aResultado);
 }
 
 /**
@@ -89,12 +83,13 @@ function destructurar(datos) {
         clouds: {all: nubes},
         dt_txt: fecha,
         main: {temp_max: maxima, temp_min: minima, grnd_level: presion},
-        weather: [{description: leyenda}],
+        sys: {pod: luz},
+        weather: [{description: leyenda, id: codigo}],
         wind: {speed: viento}
     } = datos;
     
     return {fecha: fecha, maxima: maxima, minima: minima, leyenda: leyenda,
-        viento: viento, nubes: nubes, presion: presion};
+        viento: viento, nubes: nubes, presion: presion, luz: luz, codigo: codigo};
 }
 
 /**
@@ -132,6 +127,22 @@ function agruparDatos(datos) {
     return dias;
 }
 
-window.addEventListener('load', iniciar);
+
+function montarFecha(texto) {
+    let meses = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+    let dias = ['SUN', 'MON', 'TUE', 'THU', 'FRI', 'SAT'];
+    let fecha = new Date(texto);
+    let diaNum = fecha.getDate();
+    let diaTxt = dias[fecha.getDay()];
+    let mes = meses[fecha.getMonth()];
+    return `${diaTxt} ${diaNum} ${mes}`;
+    
+}
+
+function gestionarError(e) {
+    
+}
+
+window.addEventListener('load', peticionXHR);
 
 
