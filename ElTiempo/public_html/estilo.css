@@ -26,3 +26,39 @@ aside.clima {
 img {
     border: 4px black ridge;    
 }
+
+article.widget {
+    height: 100px;
+    font-family: arial;
+}
+
+main.mainIcono {
+    display: inline-block;
+    width: 125px;
+}
+
+aside.valores {
+    display: inline-block;
+}
+
+aside.valores span {
+    margin: 0 10px;
+    padding: 5px 10px;
+}
+
+span.tempMax {
+    background-color: #f0ad4e;
+    color: white;
+    font-size: small;
+}
+
+
+span.tempMin {
+    background-color: #999999;
+    color: white;
+    font-size: small;
+}
+
+span.leyenda {
+    font-style: italic;
+}
