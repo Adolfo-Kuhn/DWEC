@@ -74,8 +74,55 @@ function gestionarDatos(datos) {
     let listado = list.map(destructurarOtros).filter(enFecha);
     let aPrediccion = agruparDatos(listado).map(promedioPrediccion);
     aPrediccion.forEach(a => widgetsInfo.push(a));
-    console.log(widgetsInfo);
-    return widgetsInfo;
+    insertarDatos(widgetsInfo);
+}
+
+function insertarDatos(datos) {
+    let eDestino = document.querySelectorAll('div.widget');
+    if (eDestino.length) {
+        modificarDatos(datos);
+    } else {
+        let aside = document.querySelector('aside.clima');
+	datos.map(crearEstructuraDatos).forEach(a => aside.appendChild(a));
+    }
+}
+
+function modificarDatos(datos) {
+    let eDestino = document.querySelectorAll('div.widget');
+    for (let i = 0; i < eDestino.length; i++) {
+        let iconoDiv = eDestino[i].querySelector('div.mainIcono');
+        iconoDiv.textContent = datos[i].fecha;
+        iconoDiv.style.background = `url(http://openweathermap.org/img/w/${datos[i].icono}) no-repeat right`;
+        eDestino[i].querySelector('span.tempMax').textContent = datos[i].maxima;
+        eDestino[i].querySelector('span.tempMin').textContent = datos[i].minima;
+        eDestino[i].querySelector('span.leyenda').textContent = datos[i].leyenda;
+        eDestino[i].querySelector('div.viento').textContent = datos[i].viento;
+        eDestino[i].querySelector('div.nubes').textContent = `${datos[i].nubes}, ${datos[i].presion}`;
+    }
+}
+
+function crearEstructuraDatos(objeto) {
+    let {fecha, icono, maxima, minima, leyenda, viento, nubes, presion} = objeto;
+    let widget = crearElemento('DIV', 'widget');
+    
+    let eMain = crearElemento('DIV', 'mainIcono', fecha);
+    eMain.style.background = `url(http://openweathermap.org/img/w/${icono}) no-repeat right`;
+    let eValores = crearElemento('DIV', 'valores');
+    
+    let eTemps = crearElemento('DIV', 'temperaturas');
+    eTemps.appendChild(crearElemento('SPAN', 'tempMax', maxima));
+    eTemps.appendChild(crearElemento('SPAN', 'tempMin', minima));
+    eTemps.appendChild(crearElemento('SPAN', 'leyenda', leyenda));
+    
+    let eViento = crearElemento('DIV', 'viento', viento);
+    let eNubes = crearElemento('DIV', 'nubes', `${nubes}, ${presion}`);
+    
+    eValores.appendChild(eTemps);
+    eValores.appendChild(eViento);
+    eValores.appendChild(eNubes);
+    widget.appendChild(eMain);
+    widget.appendChild(eValores);
+    return widget;
 }
 
 function destructurarHoy(objeto) {
@@ -85,8 +132,9 @@ function destructurarHoy(objeto) {
         weather: [{description: leyenda, icon: icono}],
         wind: {speed: viento}
     } = objeto;
-    return {fecha: montarFecha(Date.now()), maxima: maxima.toFixed(1), minima: minima.toFixed(1),
-        leyenda: leyenda, viento: viento, nubes: nubes, presion: presion, icono: `${icono}.png`};
+    return {fecha: montarFecha(Date.now()), maxima: `${maxima.toFixed(1)} °C`,
+        minima: `${minima.toFixed(1)} °C`, leyenda: leyenda, viento: `${viento} m/s`,
+        nubes: `${nubes} %`, presion: `${presion} hpa`, icono: `${icono}.png`};
 }
 
 function destructurarOtros(objeto) {
@@ -138,7 +186,7 @@ function agruparDatos(datos) {
 
 function promedioPrediccion(array) {
     let fecha = montarFecha(array[0].fecha);
-    let maxima = 0, minima = 100, viento = 0, nubes = 0, presion = 0, n = array.length;
+    let maxima = -100, minima = 100, viento = 0, nubes = 0, presion = 0, n = array.length;
     let leyenda = [], grupo = [], codigo = [];
     for (let i = 0; i < array.length; i++) {
         if (array[i].maxima > maxima) {
@@ -156,11 +204,11 @@ function promedioPrediccion(array) {
     }
     grupo = masRepetido(grupo);
     codigo = masRepetido(codigo);
-    return {fecha: fecha, maxima: maxima.toFixed(1), 
-        minima: minima.toFixed(1), 
-        viento: (viento / n).toFixed(2),
-        nubes: parseInt(nubes / n), 
-        presion: (presion / n).toFixed(2),
+    return {fecha: fecha, maxima: `${maxima.toFixed(1)} °C`, 
+        minima: `${minima.toFixed(1)} °C`,
+        viento: `${(viento / n).toFixed(2)} m/s`,
+        nubes: `${parseInt(nubes / n)} %`, 
+        presion: `${(presion / n).toFixed(2)} hpa`,
         leyenda: masRepetido(leyenda),
         icono: getIcono(grupo, codigo, 'd')};
 }
@@ -232,9 +280,17 @@ function getIcono(grupo, codigo, luz) {
     return `${sIcono}.png`;
 }
 
+function crearElemento(etiqueta, clase, texto) {
+    let elemento = document.createElement(etiqueta);
+    elemento.classList.add(clase);
+    if (texto) {
+        elemento.textContent = texto;
+    }
+    return elemento;
+}
+
 function gestionarError(e) {
     console.log(e);
 }
-
 
 window.addEventListener('load', inicio);

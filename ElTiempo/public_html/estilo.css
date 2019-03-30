@@ -4,7 +4,7 @@
 }
 
 div#wrapper {
-    max-width: 1240px;
+    max-width: 1280px;
     margin: 0 auto;
 }
 
@@ -20,43 +20,58 @@ aside.clima {
     display: inline-block;
     width: 400px;
     height: 567px;
-    margin-left: 40px;
+    margin-left: 20px;
+    vertical-align: top;
 }
 
 img {
     border: 4px black ridge;    
 }
 
-article.widget {
-    height: 100px;
+div.widget {
     font-family: arial;
+    margin: 0;
+    padding: 0 5px 0 0;
+    border: 2px solid black;
 }
 
-main.mainIcono {
+div.mainIcono {
     display: inline-block;
-    width: 125px;
+    width: 135px;
 }
 
-aside.valores {
+div.valores {
     display: inline-block;
+    vertical-align: middle;
 }
 
-aside.valores span {
-    margin: 0 10px;
+div.valores > div {
+    padding: 5px 0 0 20px;
+}
+
+div.temperaturas > span {
+    margin: 0 10px 0 0;
     padding: 5px 10px;
+}
+
+div.temperaturas > span:last-child {
+    margin: 0;
+    padding-left: 0;
+}
+
+span.tempMax, span.tempMin {
+    color: white;
+    font-size: small;
+    border-radius: 10%;
 }
 
 span.tempMax {
     background-color: #f0ad4e;
-    color: white;
-    font-size: small;
 }
 
 
 span.tempMin {
     background-color: #999999;
-    color: white;
-    font-size: small;
 }
 
 span.leyenda {
