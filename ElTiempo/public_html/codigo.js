@@ -1,36 +1,30 @@
 
-/**
- * @param {Boolean} recurso 
- * @@param {Number} idCiudad 
- * @returns {void}
- */
-function peticionXHR(recurso = 1, idCiudad) {
-    let sFichero = 'json/areas.json';
-    
-    let appId = '123bd783ca7ed95d18f949ea84051a1c';
-    let sPrediccion = 'http://api.openweathermap.org/data/2.5/forecast';
-    sPrediccion += `?id=${idCiudad}&appid=${appId}&cnt=24&units=metric&lang=es`;
-    
-    let eRecurso = recurso ? sFichero : sPrediccion;
-    
-    let xhr = new XMLHttpRequest();
-    xhr.open('GET', eRecurso, true);
-    xhr.send(null);
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            let aDatos = JSON.parse(xhr.responseText);
-            recurso ? crearMapa(aDatos) : cargarDatos(aDatos);
-        }
-    };
-    xhr.addEventListener('error', gestionarError);
+function inicio() {
+    let promesa = peticionXHR('json/areas.json');    
+    promesa.then(data => crearMapa(data)).catch(e => console.log(e));
 }
 
 
-/**
- * 
- * @param {Array} datos
- * @returns {void}
- */
+function peticionXHR(url) {
+    return new Promise((resolve, reject) => {
+        var aDatos;
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.send(null);
+        xhr.onload = () => {
+            if (xhr.status === 200) {
+                resolve(JSON.parse(xhr.responseText));
+            } else {
+                reject(xhr.statusText);
+            }
+        };
+        xhr.onerror = () => {
+            reject(xhr.statusText);
+        };
+    });
+    
+}
+
 function crearMapa(...datos) {
     datos = datos.flat();
     document.getElementsByTagName('img')[0].setAttribute('usemap', '#sevilla');
@@ -45,64 +39,88 @@ function crearMapa(...datos) {
         area.setAttribute('coords', coord);
         area.setAttribute('data-city-id', id);
         area.setAttribute('href', '#');
-        area.addEventListener('click', e => peticionXHR(0, e.target.dataset.cityId));
+        area.addEventListener('click', e => pedirCiudad(e));
         mapa.appendChild(area);
     }
     document.querySelector('.mapa').appendChild(mapa);
 }
 
-/**
- * 
- * @param {Object} datos
- * @returns {void}
- */
-function cargarDatos(datos) {
-    let {list} = datos;
-    let aResultado = list.map(destructurar).filter(enFecha);
-    let grupos = agruparDatos(aResultado);
-    let final = tratarGrupos(grupos);
-    // TO DO
+
+function pedirCiudad(e) {
+    let idCiudad = e.target.dataset.cityId;
+    let appId = '123bd783ca7ed95d18f949ea84051a1c';
+    let sRestURL = 'http://api.openweathermap.org/data/2.5/';
+    let sHoy = `weather?id=${idCiudad}&appid=${appId}&units=metric&lang=es`;
+    let sOtros = `forecast?id=${idCiudad}&appid=${appId}&cnt=24&units=metric&lang=es`;
+    
+    let datos = [];
+    let promesa1 = peticionXHR(`${sRestURL}${sHoy}`);
+    promesa1.then(data => {
+        datos.push(data);
+        return peticionXHR(`${sRestURL}${sOtros}`);
+    })
+    .then(data => {
+        datos.push(data);
+        gestionarDatos(datos);
+    })
+    .catch(e => console.log(e));    
 }
 
-/**
- * 
- * @param {Object} objeto
- * @returns {Object}
- */
-function destructurar(objeto) {
+function gestionarDatos(datos) {
+    let [oHoy, oOtros] = datos;
+    let widgetsInfo = [];
+    widgetsInfo.push(destructurarHoy(oHoy));
+    let {list} = oOtros;
+    let listado = list.map(destructurarOtros).filter(enFecha);
+    let aPrediccion = agruparDatos(listado).map(promedioPrediccion);
+    aPrediccion.forEach(a => widgetsInfo.push(a));
+    console.log(widgetsInfo);
+    return widgetsInfo;
+}
+
+function destructurarHoy(objeto) {
+    let {
+        clouds: {all: nubes},
+        main: {temp_max: maxima, temp_min: minima, pressure: presion},
+        weather: [{description: leyenda, icon: icono}],
+        wind: {speed: viento}
+    } = objeto;
+    return {fecha: montarFecha(Date.now()), maxima: maxima.toFixed(1), minima: minima.toFixed(1),
+        leyenda: leyenda, viento: viento, nubes: nubes, presion: presion, icono: `${icono}.png`};
+}
+
+function destructurarOtros(objeto) {
     let {
         clouds: {all: nubes},
         dt_txt: fecha,
         main: {temp_max: maxima, temp_min: minima, grnd_level: presion},
-        sys: {pod: luz},
         weather: [{description: leyenda, id: codigo, main: grupo}],
         wind: {speed: viento}
     } = objeto;
     
     return {fecha: fecha, maxima: maxima, minima: minima, leyenda: leyenda, viento: viento, 
-        nubes: nubes, presion: presion, grupo: grupo, codigo: codigo, luz: luz};
+        nubes: nubes, presion: presion, grupo: grupo, codigo: codigo};
 }
 
-const getDia = a => new Date(a).getDate();
-
-/**
- * 
- * @param {Object} objeto
- * @returns {Boolean}
- */
 function enFecha(objeto) {
-    let hoy = getDia(Date.now());
-    let fechaObjeto = getDia(objeto.fecha);
-    if (fechaObjeto <= hoy + 2) {
+    let hoy = new Date(Date.now());
+    let maniana = new Date();
+    maniana.setDate(hoy.getDate() + 1);
+    let pasado = new Date();
+    pasado.setDate(hoy.getDate() + 2);
+    let fechaObjeto = new Date(objeto.fecha);
+    if (fechaObjeto.getDate() === maniana.getDate() || 
+        fechaObjeto.getDate() === pasado.getDate()) {
         return true;
     }
     return false;
 }
 
+const getDia = a => new Date(a).getDate();
+
 function agruparDatos(datos) {
     let fecha = getDia(datos[0].fecha);
     let dias = [], grupo = [];
-    
     for (let i = 0; i < datos.length; i++) {
         if (getDia(datos[i].fecha) === fecha) {
             grupo.push(datos[i]);
@@ -118,48 +136,44 @@ function agruparDatos(datos) {
     return dias;
 }
 
-
-function tratarGrupos(array) {
-    let final = [];
-    let hoy = array[0][0], pasado;
-    hoy.icono = getIcono(hoy.grupo, hoy.codigo, hoy.luz);
-    final.push(hoy);
-    array.shift();
-    for (let i = 0; i < array.length; i++) {
-        pasado = promedioPrediccion(array[i]);
-        pasado.luz = hoy.luz;
-        pasado.icono = getIcono(pasado.grupo, pasado.codigo, pasado.luz);
-        final.push(pasado);
-    }
-    console.log(final);
-    return final;
-}
-
 function promedioPrediccion(array) {
-    let fecha = array[0].fecha;
-    let maxima = 0, minima = 0, viento = 0, nubes = 0, presion = 0, n = array.length;
+    let fecha = montarFecha(array[0].fecha);
+    let maxima = 0, minima = 100, viento = 0, nubes = 0, presion = 0, n = array.length;
     let leyenda = [], grupo = [], codigo = [];
     for (let i = 0; i < array.length; i++) {
-        maxima += array[i].maxima;
-        minima += array[i].minima;
-        viento += array[i].viento;
-        nubes += array[i].nubes;
-        presion += array[i].presion;
+        if (array[i].maxima > maxima) {
+            maxima = array[i].maxima;            
+        }
+        if (array[i].minima < minima) {
+            minima = array[i].minima;            
+        }
+        viento += array[i].viento;            
+        nubes += array[i].nubes;            
+        presion += array[i].presion;            
         leyenda.push(array[i].leyenda);
         grupo.push(array[i].grupo);
         codigo.push(array[i].codigo);
     }
-    return {fecha: fecha, 
-        maxima: (maxima / n).toFixed(2), 
-        minima: (minima / n).toFixed(2), 
-        viento: (viento / n).toFixed(2), 
+    grupo = masRepetido(grupo);
+    codigo = masRepetido(codigo);
+    return {fecha: fecha, maxima: maxima.toFixed(1), 
+        minima: minima.toFixed(1), 
+        viento: (viento / n).toFixed(2),
         nubes: parseInt(nubes / n), 
-        presion: (presion / n).toFixed(2), 
-        leyenda: masRepetido(leyenda), 
-        grupo: masRepetido(grupo), 
-        codigo: masRepetido(codigo)};
+        presion: (presion / n).toFixed(2),
+        leyenda: masRepetido(leyenda),
+        icono: getIcono(grupo, codigo, 'd')};
 }
 
+function montarFecha(texto) {
+    let meses = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    let dias = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    let fecha = new Date(texto);
+    let diaNum = fecha.getDate();
+    let diaTxt = dias[fecha.getDay()];
+    let mes = meses[fecha.getMonth()];
+    return `${diaTxt} ${diaNum} ${mes}`;    
+}
 
 function masRepetido(array) {
     let valor = [], cantidad = [];
@@ -180,29 +194,7 @@ function masRepetido(array) {
     return valor[cantidad.indexOf(mayor)];
 }
 
-/**
- * 
- * @param {type} texto
- * @returns {String}
- */
-function montarFecha(texto) {
-    let meses = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-    let dias = ['SUN', 'MON', 'TUE', 'THU', 'FRI', 'SAT'];
-    let fecha = new Date(texto);
-    let diaNum = fecha.getDate();
-    let diaTxt = dias[fecha.getDay()];
-    let mes = meses[fecha.getMonth()];
-    return `${diaTxt} ${diaNum} ${mes}`;    
-}
 
-
-/**
- * 
- * @param {String} grupo
- * @param {Number} codigo
- * @param {String} luz
- * @returns {String}
- */
 function getIcono(grupo, codigo, luz) {
     let sIcono = '';
     switch (grupo) {
@@ -241,9 +233,8 @@ function getIcono(grupo, codigo, luz) {
 }
 
 function gestionarError(e) {
-    
+    console.log(e);
 }
 
-window.addEventListener('load', peticionXHR);
 
-
+window.addEventListener('load', inicio);
