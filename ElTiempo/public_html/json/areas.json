@@ -1,72 +1,72 @@
 [    
     {
         "nombre": "Sevilla",
-        "coord": "218,252,376,281",
+        "coord": "150, 172, 255, 190",
         "id": 2510911
     },
     {
         "nombre": "Lora del Río",
-        "coord": "354,105,473,140",
+        "coord": "240, 70, 320, 94",
         "id": 6361010
     },
     {
         "nombre": "Écija",
-        "coord": "600,183,663,215",
+        "coord": "405, 123, 450, 150",
         "id": 6360994
     },
     {
         "nombre": "La Rinconada",
-        "coord": "212,194,353,240",
+        "coord": "148, 133, 237, 155",
         "id": 2515562
     },
     {
         "nombre": "Carmona",
-        "coord": "368,225,478,249",
+        "coord": "249, 155, 322, 167",
         "id": 2520118
     },
     {
         "nombre": "Alcalá de Guadaíra",
-        "coord": "281,287,487,309",
+        "coord": "192, 195, 330, 210",
         "id": 6360959
     },
     {
         "nombre": "Osuna",
-        "coord": "558,332,625,673",
+        "coord": "378, 225, 420, 250",
         "id": 6361023
     },
     {
         "nombre": "Estepa",
-        "coord": "644,308,715,348",
+        "coord": "435, 210, 480, 235",
         "id": 6360996
     },
     {
         "nombre": "Dos Hermanas",
-        "coord": "242,320,410,343",
+        "coord": "165, 217, 280, 230",
         "id": 2518794
     },
     {
         "nombre": "Coria del Río",
-        "coord": "111,295,200,339",
+        "coord": "80, 200, 138, 230",
         "id": 6360989
     },
     {
         "nombre": "Los Palacios y Villafranca",
-        "coord": "118,381,255,434",
+        "coord": "84, 255, 174, 285",
         "id": 2514553
     },
     {
         "nombre": "Utrera",
-        "coord": "303,376,387,395",
+        "coord": "203, 251, 257, 265",
         "id": 6361050
     },
     {
         "nombre": "Morón de la Frontera",
-        "coord": "432,387,561,439",
+        "coord": "295, 260, 378, 290",
         "id": 6361020
     },
     {
         "nombre": "Lebrija",
-        "coord": "170,505,260,529",
+        "coord": "118, 340, 177, 358",
         "id": 6361008
     }
 ]

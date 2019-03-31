@@ -3,22 +3,40 @@
     padding: 0;
 }
 
+body {
+    background: url(img/Background.jpg);
+}
+
 div#wrapper {
-    max-width: 1280px;
+    max-width: 1152px;
     margin: 0 auto;
+    padding-top: 50px;
 }
 
 h1 {
     margin: 30px 0 15px 20px;
 }
 
+h2 {
+    margin-bottom: 5px;
+}
+
+h1, h2 {
+    color: #f6d25a;
+    font-family: Tahoma;
+}
+
 main.mapa {
     display: inline-block;
 }
 
+area {
+    outline: none;
+}
+
 aside.clima {
     display: inline-block;
-    width: 400px;
+    width: 550px;
     height: 567px;
     margin-left: 20px;
     vertical-align: top;
@@ -30,27 +48,34 @@ img {
 
 div.widget {
     font-family: arial;
-    margin: 0;
-    padding: 0 5px 0 0;
+    background-color: #e9eaec;
+    margin: 0 0 2px 0;
+    padding-left: 10px;
     border: 2px solid black;
+    border-radius: 20px;
 }
 
 div.mainIcono {
     display: inline-block;
     width: 135px;
+    height: 50px;
+    padding-top: 20px;
+    font-weight: bold;
+    color: graytext;
 }
 
 div.valores {
     display: inline-block;
     vertical-align: middle;
+    padding-left: 30px;
 }
 
 div.valores > div {
-    padding: 5px 0 0 20px;
+    margin: 10px 0 5px 10px;
 }
 
 div.temperaturas > span {
-    margin: 0 10px 0 0;
+    margin-right: 5px;
     padding: 5px 10px;
 }
 
@@ -62,7 +87,7 @@ div.temperaturas > span:last-child {
 span.tempMax, span.tempMin {
     color: white;
     font-size: small;
-    border-radius: 10%;
+    border-radius: 5px;
 }
 
 span.tempMax {
