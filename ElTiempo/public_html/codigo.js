@@ -80,7 +80,11 @@ function crearMapa(datos) {
  * función para su tratamiento. Muestra y oculta un icono de proceso de carga 
  * mientras se realizan las peticiones y se obtienen las respuestas mediante
  * sendas funciones.
+<<<<<<< HEAD
  * @param {Event} e evento que se ha disparado en el elemento.
+=======
+ * @param {Event} e evento que ha disparado el elemento.
+>>>>>>> bf19f9498e9dd9769d5a37b9a9680970dcd62b55
  * @returns {void}
  * @see peticionXHR
  * @see gestionarDatos
@@ -97,7 +101,7 @@ function pedirCiudad(e) {
     // cadenas con las partes de la predicción del día actual y los dos posteriores
     let sHoy = `weather?id=${idCiudad}&appid=${appId}&units=metric&lang=es`;
     let sOtros = `forecast?id=${idCiudad}&appid=${appId}&cnt=24&units=metric&lang=es`;
-
+    
     let eHeader = document.querySelectorAll('h2');
     if (eHeader.length) { // si existe el encabezado se modifica
         eHeader[0].textContent = e.target.alt;
@@ -108,7 +112,11 @@ function pedirCiudad(e) {
     }
     mostrarIconoCarga(); // se muestra el icono de proceso de carga
     let datos = []; // array en el que almacenar los datos recibidos
+<<<<<<< HEAD
     // petición de la predicción para el día en curso
+=======
+    // petición de la predicción del para el día en curso
+>>>>>>> bf19f9498e9dd9769d5a37b9a9680970dcd62b55
     let promesa1 = peticionXHR(`${sRestURL}${sHoy}`);
     promesa1.then(data => { // si la respuesta es satisfactoria
         datos.push(data); // se introducen los datos en el array
@@ -138,7 +146,11 @@ function pedirCiudad(e) {
  */
 function gestionarDatos(datos) {
     // se nombran las dos posiciones del array recibido; cada una es un objeto
+<<<<<<< HEAD
     let [oHoy, oOtros] = datos;
+=======
+    let [oHoy, oOtros] = datos; 
+>>>>>>> bf19f9498e9dd9769d5a37b9a9680970dcd62b55
     // se crea un nuevo array para devolver los datos tratados a una función
     let widgetsInfo = [];
     // se inserta en el array el objeto del día en curso con la estructura deseada
@@ -146,11 +158,20 @@ function gestionarDatos(datos) {
     // se obtiene el array guardado en la propiedad 'list' del segundo objeto
     let {list} = oOtros;
     /* se obtiene un array con la estructura de datos deseada en cada objeto y 
+<<<<<<< HEAD
      pertenecientes a las fechas de los dos días posteriores */
     let listado = list.map(destructurarOtros).filter(enFecha);
     agruparDatos(listado) // se agrupan los objetos por fecha
         .map(promedioPrediccion) // se saca un promedio de la predicción
         .forEach(a => widgetsInfo.push(a)); // y se añaden los objetos al array
+=======
+    pertenecientes a las fechas de los dos días posteriores */
+    let listado = list.map(destructurarOtros).filter(enFecha);
+    // se agrupan los objetos por fecha y se saca un promedio de la predicción
+    let aPrediccion = agruparDatos(listado).map(promedioPrediccion);
+    // se añaden los objetos al array a devolver
+    aPrediccion.forEach(a => widgetsInfo.push(a));
+>>>>>>> bf19f9498e9dd9769d5a37b9a9680970dcd62b55
     // se pasan los datos a la función insertarDatos
     insertarDatos(widgetsInfo);
 }
@@ -205,7 +226,11 @@ function modificarDatos(datos) {
  * @see crearElemento
  */
 function crearEstructuraDatos(objeto) {
+<<<<<<< HEAD
     // se obtienen las propiedades del objeto
+=======
+    // se obtienen los valores de las propiedades del objeto
+>>>>>>> bf19f9498e9dd9769d5a37b9a9680970dcd62b55
     let {fecha, icono, maxima, minima, leyenda, viento, nubes, presion} = objeto;
     let widget = crearElemento('DIV', 'widget'); // se crea el 'div' principal
     // se crea el elemento contenedor de la fecha y el icono
@@ -244,7 +269,11 @@ function destructurarHoy(objeto) {
         weather: [{description: leyenda, icon: icono}],
         wind: {speed: viento}
     } = objeto;
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> bf19f9498e9dd9769d5a37b9a9680970dcd62b55
     return {fecha: montarFecha(Date.now()), maxima: `${maxima.toFixed(1)} °C`,
         minima: `${minima.toFixed(1)} °C`, leyenda: leyenda, viento: `${viento} m/s`,
         nubes: `${nubes} %`, presion: `${presion} hpa`, icono: `${icono}.png`};
@@ -341,8 +370,13 @@ function agruparDatos(datos) {
  */
 function promedioPrediccion(array) {
     let fecha = montarFecha(array[0].fecha);
+<<<<<<< HEAD
     let maxima = -100, minima = 100, viento = 0,
             nubes = 0, presion = 0, n = array.length;
+=======
+    let maxima = -100, minima = 100, viento = 0, 
+        nubes = 0, presion = 0, n = array.length;
+>>>>>>> bf19f9498e9dd9769d5a37b9a9680970dcd62b55
     let leyenda = [], grupo = [], codigo = [];
     for (let i = 0; i < array.length; i++) {
         if (array[i].maxima > maxima) {
@@ -372,9 +406,15 @@ function promedioPrediccion(array) {
 /**
  * Devuelve un formato de fecha específico (día_semana día-mes mes) para mostar 
  * en la predicción. Extrae del texto que recibe por parámetro el día de la semana, 
+<<<<<<< HEAD
  * el día del mes y el mes para mostrarlo en el formato deseado.
  * @param {String} texto cadena con la fecha a modificar.
  * @returns {String} cadena con el formato de fecha específico.
+=======
+ * el día del mes y el mes para mostrarlo en el formato 'DíaSemana DíaMes Mes'.
+ * @param {String} texto cadena de texto con la fecha a modificar.
+ * @returns {String} cadena de texto con el formato de fecha específico.
+>>>>>>> bf19f9498e9dd9769d5a37b9a9680970dcd62b55
  */
 function montarFecha(texto) {
     let meses = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -463,10 +503,17 @@ function getIcono(grupo, codigo, luz) {
 /**
  * Muestra un icono de carga mientras se reciben los datos de las peticiones.
  * Inserta un elemento <code>div</code> con un elemento hijo <code>img</code> con
+<<<<<<< HEAD
  * la imagen del icono de carga de datos en el elemento en que se muestran las
  * predicciones. Si el elemento ya existe se establece su propiedad <code>display</code> 
  * como <code>block</code> para que se muestre, ya que se habría ocultado previamente 
  * al realizarse la anterior carga de datos.
+=======
+ * la imagen del icono de carga de datos en la zona en la que se muestran las
+ * predicciones. Si el elemento ya existe se establece su propiedad <code>display</code> 
+ * como <code>block</code> para que se muestre, ya que se había ocultado previamente 
+ * al realizarse la carga de los datos.
+>>>>>>> bf19f9498e9dd9769d5a37b9a9680970dcd62b55
  * @returns {void}
  */
 function mostrarIconoCarga() {
@@ -481,14 +528,22 @@ function mostrarIconoCarga() {
         eIcono.setAttribute('src', 'img/Carga.gif');
         eIcono.setAttribute('alt', 'Cargando datos...');
         eCajaIcono.appendChild(eIcono);
+<<<<<<< HEAD
         eClima.appendChild(eCajaIcono);
+=======
+        eClima.appendChild(eCajaIcono);	
+>>>>>>> bf19f9498e9dd9769d5a37b9a9680970dcd62b55
     }
 }
 
 /**
  * Oculta el elemento que contiene el icono de carga una vez que se ha completado
  * la carga de los datos peticionados. Para ello asigna a la propìedad <code>display</code>
+<<<<<<< HEAD
  * del elemento el valor <code>none</code>.
+=======
+ * el valor <code>none</code>.
+>>>>>>> bf19f9498e9dd9769d5a37b9a9680970dcd62b55
  * @returns {void}
  */
 function ocultarIconoCarga() {
