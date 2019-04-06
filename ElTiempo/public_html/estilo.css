@@ -31,11 +31,13 @@ main.mapa {
 }
 
 area {
+    cursor: pointer;
     outline: none;
 }
 
 aside.clima {
     display: inline-block;
+    position: relative;
     width: 550px;
     height: 567px;
     margin-left: 20px;
@@ -101,4 +103,17 @@ span.tempMin {
 
 span.leyenda {
     font-style: italic;
+}
+
+div.cajaIcono {
+    position: absolute;
+    text-align: center;
+    padding-top: 70px;
+    width: 550px;
+    height: 215px;
+    background-color: rgba(58, 58, 58, 0.4);
+}
+
+div.cajaIcono > img {
+    border: none;
 }

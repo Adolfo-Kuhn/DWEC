@@ -14,24 +14,25 @@ function inicio() {
 /**
  * Realiza una petición XHR mediante una promesa a la URL que recibe por parámetro.
  * @param {String} url cadena de texto con la URL a la que realiza la petición.
- * @returns {Promise} con el resultado de la petición o el error correspondiente.
+ * @returns {Promise} promesa con el resultado de la petición o el error correspondiente.
  */
 function peticionXHR(url) {
+    // se devuelve una promesa de la petición xhr
     return new Promise((resolve, reject) => {
-        var aDatos;
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', url, true);
-        xhr.send(null);
-        xhr.onload = () => {
-            if (xhr.status === 200) {
+        var xhr = new XMLHttpRequest(); // se crea el objeto
+        xhr.onload = () => { // en el evento load
+            if (xhr.status === 200) { // si el estado de la respuesta es exitoso
+                // la promesa es exitosa y devuelve la respuesta parseada
                 resolve(JSON.parse(xhr.responseText));
-            } else {
+            } else { // si no la promesa es fallida y devuelve el error
                 reject(xhr.statusText);
             }
         };
-        xhr.onerror = () => {
-            reject(xhr.statusText);
+        xhr.onerror = () => { // en el evento error
+            reject(xhr.statusText); // la promesa es fallida y devuelve el error
         };
+        xhr.open('GET', url, true); // se monta la petición
+        xhr.send(null); // y se envía
     });
 
 }
@@ -46,23 +47,27 @@ function peticionXHR(url) {
  * @returns {void}
  */
 function crearMapa(datos) {
+    // asigna el mapa a la imagen para que se reconozcan las areas definidas
     document.getElementsByTagName('img')[0].setAttribute('usemap', '#sevilla');
     let mapa = document.createElement('MAP'), area;
     mapa.setAttribute('name', 'sevilla');
     for (let i = 0; i < datos.length; i++) {
+        // se obtienen las propiedades de cada objeto
         let {nombre, coord, id} = datos[i];
+        // y se añaden como propiedades de cada elemento area
         area = document.createElement('AREA');
         area.setAttribute('shape', 'rect');
         area.setAttribute('alt', nombre);
         area.setAttribute('coords', coord);
         area.setAttribute('data-city-id', id);
-        area.setAttribute('href', '#');
+        // y se les asigna una función a su evento 'click'
         area.addEventListener('click', e => pedirCiudad(e));
         mapa.appendChild(area);
     }
     document.querySelector('.mapa').appendChild(mapa);
-
-    let pulsar = new MouseEvent('click')
+    /* se crea un nuevo evento click y se dispara sobre el area de Sevilla
+     para que se muestre tras la carga de la página*/
+    let pulsar = new MouseEvent('click');
     document.querySelector('area[alt=Sevilla]').dispatchEvent(pulsar);
 }
 
@@ -71,42 +76,57 @@ function crearMapa(datos) {
  * <code>area</code> que dispara el evento. Inserta un elemento <code>H2</code>
  * con el nombre de la localidad en caso de que no existiera, o inserta solo el
  * texto en caso de que existiera. Se realizan peticiones encadenadas para que se
- * muestra toda la información o ninguna.
- * @param {Event} e evento que ha disparado el elemento.
+ * muestra toda la información o ninguna. Tras recibir los datos, los pasa a una
+ * función para su tratamiento. Muestra y oculta un icono de proceso de carga 
+ * mientras se realizan las peticiones y se obtienen las respuestas mediante
+ * sendas funciones.
+ * @param {Event} e evento que se ha disparado en el elemento.
  * @returns {void}
  * @see peticionXHR
+ * @see gestionarDatos
+ * @see mostrarIconoCarga
+ * @see ocultarIconoCarga
  */
 function pedirCiudad(e) {
+    // identificador de la ciudad del elemento que dispara el evento
     let idCiudad = e.target.dataset.cityId;
+    // código de validación de la API
     let appId = '123bd783ca7ed95d18f949ea84051a1c';
+    // cadena con la parte común de la URL
     let sRestURL = 'http://api.openweathermap.org/data/2.5/';
+    // cadenas con las partes de la predicción del día actual y los dos posteriores
     let sHoy = `weather?id=${idCiudad}&appid=${appId}&units=metric&lang=es`;
     let sOtros = `forecast?id=${idCiudad}&appid=${appId}&cnt=24&units=metric&lang=es`;
 
     let eHeader = document.querySelectorAll('h2');
-    if (eHeader.length) {
+    if (eHeader.length) { // si existe el encabezado se modifica
         eHeader[0].textContent = e.target.alt;
-    } else {
+    } else { // si no se crea
         eHeader = document.createElement('H2');
         eHeader.textContent = e.target.alt;
         document.querySelector('aside.clima').appendChild(eHeader);
     }
-    let datos = [];
+    mostrarIconoCarga(); // se muestra el icono de proceso de carga
+    let datos = []; // array en el que almacenar los datos recibidos
+    // petición de la predicción para el día en curso
     let promesa1 = peticionXHR(`${sRestURL}${sHoy}`);
-    promesa1.then(data => {
-        datos.push(data);
+    promesa1.then(data => { // si la respuesta es satisfactoria
+        datos.push(data); // se introducen los datos en el array
+        // y se devuelve otra promesa de petición
         return peticionXHR(`${sRestURL}${sOtros}`);
     })
-    .then(data => {
-        datos.push(data);
-        gestionarDatos(datos);
+    .then(data => { // si la respuesta es satisfactoria
+        datos.push(data); // se introducen los datos en el array
+        ocultarIconoCarga(); // se oculta el icono de proceso de carga
+        gestionarDatos(datos); // y se envian los datos para ser tratados
     })
+    // si cualquiera de las promesas es fallida se trata el error
     .catch(gestionarError);
 }
 
 /**
- * Prepara los datos recibidos desde la Weather API y los agrupa en un array de
- * tres objetos conteniendo la información
+ * Prepara los datos recibidos desde la OpenWeather API y los agrupa en un array 
+ * de tres objetos conteniendo la información.
  * @param {Array} datos con la información recibida desde la API
  * @returns {void}
  * @see destructurarHoy
@@ -117,13 +137,21 @@ function pedirCiudad(e) {
  * @see insertarDatos
  */
 function gestionarDatos(datos) {
+    // se nombran las dos posiciones del array recibido; cada una es un objeto
     let [oHoy, oOtros] = datos;
+    // se crea un nuevo array para devolver los datos tratados a una función
     let widgetsInfo = [];
+    // se inserta en el array el objeto del día en curso con la estructura deseada
     widgetsInfo.push(destructurarHoy(oHoy));
+    // se obtiene el array guardado en la propiedad 'list' del segundo objeto
     let {list} = oOtros;
+    /* se obtiene un array con la estructura de datos deseada en cada objeto y 
+     pertenecientes a las fechas de los dos días posteriores */
     let listado = list.map(destructurarOtros).filter(enFecha);
-    let aPrediccion = agruparDatos(listado).map(promedioPrediccion);
-    aPrediccion.forEach(a => widgetsInfo.push(a));
+    agruparDatos(listado) // se agrupan los objetos por fecha
+        .map(promedioPrediccion) // se saca un promedio de la predicción
+        .forEach(a => widgetsInfo.push(a)); // y se añaden los objetos al array
+    // se pasan los datos a la función insertarDatos
     insertarDatos(widgetsInfo);
 }
 
@@ -141,13 +169,17 @@ function insertarDatos(datos) {
     if (eDestino.length) {
         modificarDatos(datos);
     } else {
-        let aside = document.querySelector('aside.clima');
-        datos.map(crearEstructuraDatos).forEach(a => aside.appendChild(a));
+        let eAside = document.querySelector('aside.clima');
+        datos.map(crearEstructuraDatos)
+            .forEach(a => eAside.appendChild(a));
     }
 }
 
 /**
  * Inserta los datos recibidos y procesados en la estructura HTML del documento.
+ * Se recorren en bucle cada una de las estructuras ('widgets') que muestran la
+ * información de las predicciones y se modifican sus contenidos con los datos
+ * recibidos por parámetro.
  * @param {Array} datos a insertar en la estructura de elementos.
  * @returns {void}
  */
@@ -173,21 +205,24 @@ function modificarDatos(datos) {
  * @see crearElemento
  */
 function crearEstructuraDatos(objeto) {
+    // se obtienen las propiedades del objeto
     let {fecha, icono, maxima, minima, leyenda, viento, nubes, presion} = objeto;
-    let widget = crearElemento('DIV', 'widget');
-
+    let widget = crearElemento('DIV', 'widget'); // se crea el 'div' principal
+    // se crea el elemento contenedor de la fecha y el icono
     let eMain = crearElemento('DIV', 'mainIcono', fecha);
     eMain.style.background = `url(http://openweathermap.org/img/w/${icono}) no-repeat right`;
+    // se crea el elemento que contiene los valores numéricos
     let eValores = crearElemento('DIV', 'valores');
-
+    // se crea otro contenedor para las temperaturas
     let eTemps = crearElemento('DIV', 'temperaturas');
+    // que se incluyen en elementos 'span' para aplicar estilos
     eTemps.appendChild(crearElemento('SPAN', 'tempMax', maxima));
     eTemps.appendChild(crearElemento('SPAN', 'tempMin', minima));
     eTemps.appendChild(crearElemento('SPAN', 'leyenda', leyenda));
-
+    // se crean los elementos para valores de viento y nubes/presión
     let eViento = crearElemento('DIV', 'viento', viento);
     let eNubes = crearElemento('DIV', 'nubes', `clouds: ${nubes}, ${presion}`);
-
+    // se insertan en el 'widget' todos los elementos
     eValores.appendChild(eTemps);
     eValores.appendChild(eViento);
     eValores.appendChild(eNubes);
@@ -209,6 +244,7 @@ function destructurarHoy(objeto) {
         weather: [{description: leyenda, icon: icono}],
         wind: {speed: viento}
     } = objeto;
+
     return {fecha: montarFecha(Date.now()), maxima: `${maxima.toFixed(1)} °C`,
         minima: `${minima.toFixed(1)} °C`, leyenda: leyenda, viento: `${viento} m/s`,
         nubes: `${nubes} %`, presion: `${presion} hpa`, icono: `${icono}.png`};
@@ -235,18 +271,20 @@ function destructurarOtros(objeto) {
 
 /**
  * Comprueba si el objeto que recibe por parámetro contiene la fecha de alguno de
- * los dos días posteriores.
+ * los dos días posteriores. Esta función se utiliza en una de orden superior para
+ * filtrar objetos con fechas determinadas.
  * @param {Object} objeto sobre el que comprobar la fecha.
  * @returns {Boolean} <code>true</code> si el objeto está dentro de las fechas;
- * false en caso contrario.
+ * <code>false</code> en caso contrario.
  */
 function enFecha(objeto) {
-    let hoy = new Date(Date.now());
+    let hoy = new Date(Date.now()); // se obtiene la fecha de hoy
     let maniana = new Date();
-    maniana.setDate(hoy.getDate() + 1);
+    maniana.setDate(hoy.getDate() + 1); // la de mañana
     let pasado = new Date();
-    pasado.setDate(hoy.getDate() + 2);
-    let fechaObjeto = new Date(objeto.fecha);
+    pasado.setDate(hoy.getDate() + 2); // la de pasado
+    let fechaObjeto = new Date(objeto.fecha); // y la del objeto
+    // si la fecha del objeto es igual a la de mañana o pasado se devuelve true
     if (fechaObjeto.getDate() === maniana.getDate() ||
             fechaObjeto.getDate() === pasado.getDate()) {
         return true;
@@ -263,27 +301,32 @@ const getDia = a => new Date(a).getDate();
 
 /**
  * Extrae del array que recibe los objetos con la misma fecha y los agrupa en un
- * array. Cada uno de los array se inserta en otro array que es devuelto por la 
+ * array. Cada uno de estos array se inserta en otro array que es devuelto por la 
  * función.
  * @param {Array} datos array de objetos a clasificar.
- * @returns {Array} de dos posiciones con un array de objetos de la predicción.
+ * @returns {Array} array de dos posiciones con un array de objetos de la 
+ * predicción cada una.
  */
 function agruparDatos(datos) {
+    // toma la fecha del primer objeto del array
     let fecha = getDia(datos[0].fecha);
     let dias = [], grupo = [];
     for (let i = 0; i < datos.length; i++) {
+        // si la fecha del primer objeto concuerda con la de la muestra
         if (getDia(datos[i].fecha) === fecha) {
-            grupo.push(datos[i]);
+            grupo.push(datos[i]); // se guarda en el array grupo
+            // y se actualiza la fecha a comparar con la del objeto actual
             fecha = getDia(datos[i].fecha);
-        } else {
-            dias.push(grupo);
-            grupo = [];
-            grupo.push(datos[i]);
+        } else { // si la fecha es distinta a la de la muestra
+            dias.push(grupo); // se guarda el array grupo dentro del array dias
+            grupo = []; // se inicializa el array grupo como vacío
+            grupo.push(datos[i]); // se añade el objeto actual al array grupo
+            // y se actualiza la fecha a comparar con la del objeto actual
             fecha = getDia(datos[i].fecha);
         }
     }
-    dias.push(grupo);
-    return dias;
+    dias.push(grupo); // se añade el último grupo al array dias
+    return dias; // y se devuelve
 }
 
 /**
@@ -298,7 +341,8 @@ function agruparDatos(datos) {
  */
 function promedioPrediccion(array) {
     let fecha = montarFecha(array[0].fecha);
-    let maxima = -100, minima = 100, viento = 0, nubes = 0, presion = 0, n = array.length;
+    let maxima = -100, minima = 100, viento = 0,
+            nubes = 0, presion = 0, n = array.length;
     let leyenda = [], grupo = [], codigo = [];
     for (let i = 0; i < array.length; i++) {
         if (array[i].maxima > maxima) {
@@ -327,9 +371,10 @@ function promedioPrediccion(array) {
 
 /**
  * Devuelve un formato de fecha específico (día_semana día-mes mes) para mostar 
- * en la predicción.
- * @param {String} texto cadena de texto con la fecha a modificar.
- * @returns {String} cadena de texto con el formato de fecha específico.
+ * en la predicción. Extrae del texto que recibe por parámetro el día de la semana, 
+ * el día del mes y el mes para mostrarlo en el formato deseado.
+ * @param {String} texto cadena con la fecha a modificar.
+ * @returns {String} cadena con el formato de fecha específico.
  */
 function montarFecha(texto) {
     let meses = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -343,27 +388,29 @@ function montarFecha(texto) {
 
 /**
  * Determina y devuelve el valor más repetido dentro de un array de valores de 
- * cualquier tipo.
+ * cualquier tipo. Devuelve el primero de los valores más repetido en el array
+ * al determinarse por el índice.
  * @param {Array} array para determinar el valor más repetido.
  * @returns {Object} valor más repetido en el array.
  */
 function masRepetido(array) {
+    // se almacenan los valores y las veces que se repiten de arrays paralelos
     let valor = [], cantidad = [];
+    // se recorre el array original
     for (let i = 0; i < array.length; i++) {
-        if (valor.includes(array[i])) {
+        if (valor.includes(array[i])) { // si el array de valores contien el valor
+            // se incrementa en uno la misma posición en el array paralelo
             cantidad[valor.indexOf(array[i])]++;
-        } else {
-            valor.push(array[i]);
+        } else { // si el array de valores no contiene el valor
+            valor.push(array[i]); // se añade al array de valores
+            // y se inidican sus apariciones como 1 en el array paralelo
             cantidad.push(1);
         }
     }
-    let mayor = 0;
-    for (let i = 0; i < cantidad.length; i++) {
-        if (cantidad[i] > mayor) {
-            mayor = cantidad[i];
-        }
-    }
-    return valor[cantidad.indexOf(mayor)];
+    // se hace copia ordenada de mayor a menor del array de apariciones 
+    let ordenado = Array.from(cantidad).sort().reverse();
+    // se devuelve el valor que se encuentra en el índice que tiene más apariciones
+    return valor[cantidad.indexOf(ordenado[0])];
 }
 
 /**
@@ -414,8 +461,46 @@ function getIcono(grupo, codigo, luz) {
 }
 
 /**
+ * Muestra un icono de carga mientras se reciben los datos de las peticiones.
+ * Inserta un elemento <code>div</code> con un elemento hijo <code>img</code> con
+ * la imagen del icono de carga de datos en el elemento en que se muestran las
+ * predicciones. Si el elemento ya existe se establece su propiedad <code>display</code> 
+ * como <code>block</code> para que se muestre, ya que se habría ocultado previamente 
+ * al realizarse la anterior carga de datos.
+ * @returns {void}
+ */
+function mostrarIconoCarga() {
+    let eClima = document.querySelector('aside.clima');
+    let eCajaIcono = document.querySelector('div.cajaIcono');
+    if (eCajaIcono) {
+        eCajaIcono.style.display = 'block';
+    } else {
+        eCajaIcono = document.createElement('DIV');
+        eCajaIcono.classList.add('cajaIcono');
+        let eIcono = document.createElement('IMG');
+        eIcono.setAttribute('src', 'img/Carga.gif');
+        eIcono.setAttribute('alt', 'Cargando datos...');
+        eCajaIcono.appendChild(eIcono);
+        eClima.appendChild(eCajaIcono);
+    }
+}
+
+/**
+ * Oculta el elemento que contiene el icono de carga una vez que se ha completado
+ * la carga de los datos peticionados. Para ello asigna a la propìedad <code>display</code>
+ * del elemento el valor <code>none</code>.
+ * @returns {void}
+ */
+function ocultarIconoCarga() {
+    let eCajaIcono = document.querySelector('div.cajaIcono');
+    if (window.getComputedStyle(eCajaIcono).display.includes('block')) {
+        eCajaIcono.style.display = 'none';
+    }
+}
+
+/**
  * Crea un elemento HTML con un atributo <code>class</code> y una cadena de texto
- * como <code>TextNode</code> si recibe este parámetro.
+ * como <code>TextNode</code>, si recibe este último parámetro.
  * @param {String} etiqueta nombre de la etiqueta HTML del elemento a crear.
  * @param {String} clase nombre de la clase a aplicar al elemento.
  * @param {String} texto a incluir como nodo de texto dentro del elemento.
@@ -442,6 +527,6 @@ function gestionarError(e) {
 }
 /**
  * Asigna la función <code>inicio</code> al evento <code>load</code> del objeto 
- * <code>window</code>.
+ * <code>window</code> para que se ejecute cuando la página haya cargado completamente.
  */
 window.addEventListener('load', inicio);
